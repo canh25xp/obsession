@@ -143,10 +143,10 @@ export default function Home() {
   const getSubMessage = () => {
     if (saidYes) return "";
     if (noHoverCount === 0) return "";
-    if (noHoverCount <= 2) return "Hey! Don't click No! 😤";
-    if (noHoverCount <= 5) return "The No button doesn't want you either! 😠";
-    if (noHoverCount <= 8) return "Just press Yes already! 💢";
-    return "You can't catch No! Just say Yes! 🫠";
+    if (noHoverCount <= 2) return "That's not an option";
+    if (noHoverCount <= 5) return "Please ?";
+    if (noHoverCount <= 8) return "Pretty Pleaseeeee";
+    return "Actually I bought the ticket already. See you Friday !";
   };
 
   return (
