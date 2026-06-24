@@ -13,8 +13,8 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "Will You Go On a Date With Me?",
-  description: "An interactive date invitation",
+  title: "Movie Invitation",
+  description: "An interactive date invitation but NO is not an option",
 };
 
 export default function RootLayout({
