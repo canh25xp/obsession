@@ -1,65 +1,245 @@
+"use client";
+
+import { useState, useCallback } from "react";
 import Image from "next/image";
 
+const PINK_PASTEL = { r: 255, g: 182, b: 193 };
+const DARK = { r: 25, g: 5, b: 10 };
+
+function getBackgroundColor(attempts: number): string {
+  const maxAttempts = 15;
+  const t = Math.min(attempts / maxAttempts, 1);
+  const r = Math.round(PINK_PASTEL.r + t * (DARK.r - PINK_PASTEL.r));
+  const g = Math.round(PINK_PASTEL.g + t * (DARK.g - PINK_PASTEL.g));
+  const b = Math.round(PINK_PASTEL.b + t * (DARK.b - PINK_PASTEL.b));
+  return `rgb(${r}, ${g}, ${b})`;
+}
+
+interface MessageDef {
+  threshold: number;
+  text: string;
+  image: string;
+  isVideo?: boolean;
+}
+
+const MESSAGES: MessageDef[] = [
+  { threshold: 3, text: "That's not an option", image: "/message_3.png" },
+  { threshold: 5, text: "Please ?", image: "/message_5.gif" },
+  {
+    threshold: 8,
+    text: "You really gonna make me beg aren't you ?",
+    image: "/message_8.gif",
+  },
+  { threshold: 10, text: "", image: "/message_10.gif", isVideo: true },
+];
+
+function getActiveMessages(attempts: number): MessageDef[] {
+  return MESSAGES.filter((m) => m.threshold <= attempts);
+}
+
 export default function Home() {
+  const [noAttempts, setNoAttempts] = useState(0);
+  const [yesClicked, setYesClicked] = useState(false);
+  const [selectedDate, setSelectedDate] = useState("");
+  const [dateConfirmed, setDateConfirmed] = useState(false);
+  const [noButtonPos, setNoButtonPos] = useState<{ x: number; y: number }>({
+    x: 0,
+    y: 0,
+  });
+  const [hasMoved, setHasMoved] = useState(false);
+
+  const handleNoHover = useCallback(() => {
+    const newAttempts = noAttempts + 1;
+    setNoAttempts(newAttempts);
+    setHasMoved(true);
+
+    const buttonWidth = 130;
+    const buttonHeight = 56;
+    const padding = 20;
+    const x =
+      Math.random() * (window.innerWidth - buttonWidth - padding * 2) + padding;
+    const y =
+      Math.random() * (window.innerHeight - buttonHeight - padding * 2) +
+      padding;
+    setNoButtonPos({ x, y });
+  }, [noAttempts]);
+
+  const handleYesClick = useCallback(() => {
+    setYesClicked(true);
+  }, []);
+
+  const handleDateConfirm = useCallback(() => {
+    if (selectedDate) {
+      setDateConfirmed(true);
+    }
+  }, [selectedDate]);
+
+  const getDayOfWeek = (dateStr: string): string => {
+    const date = new Date(dateStr);
+    return new Intl.DateTimeFormat("en-US", { weekday: "long" }).format(date);
+  };
+
+  const yesButtonScale = 1 + noAttempts * 0.15;
+  const bgColor = yesClicked
+    ? "rgb(255, 182, 193)"
+    : getBackgroundColor(noAttempts);
+  const activeMessages = getActiveMessages(noAttempts);
+  const showVideo = noAttempts >= 10;
+
+  // ── Date confirmed view ──────────────────────────────────────────
+  if (dateConfirmed && selectedDate) {
+    return (
+      <div
+        className="flex flex-col items-center justify-center min-h-screen transition-colors duration-700"
+        style={{ backgroundColor: bgColor }}
+      >
+        <div className="text-7xl mb-6 animate-bounce">🎬💕</div>
+        <h1 className="text-5xl md:text-6xl font-bold text-white drop-shadow-lg text-center px-4">
+          See you on {getDayOfWeek(selectedDate)} !
+        </h1>
+      </div>
+    );
+  }
+
+  // ── Calendar picker view ─────────────────────────────────────────
+  if (yesClicked) {
+    return (
+      <div
+        className="flex flex-col items-center justify-center min-h-screen gap-8 transition-colors duration-700"
+        style={{ backgroundColor: bgColor }}
+      >
+        <div className="text-7xl animate-bounce">🎉</div>
+        <h1 className="text-4xl md:text-5xl font-bold text-white drop-shadow-lg text-center px-4">
+          Yay! Pick a date 🎬
+        </h1>
+        <input
+          type="datetime-local"
+          value={selectedDate}
+          onChange={(e) => setSelectedDate(e.target.value)}
+          className="px-6 py-4 rounded-xl text-lg border-2 border-pink-300 focus:border-pink-500 outline-none shadow-lg cursor-pointer"
+        />
+        {selectedDate && (
+          <button
+            onClick={handleDateConfirm}
+            className="px-10 py-4 bg-pink-500 text-white text-xl font-bold rounded-full hover:bg-pink-600 transition-all hover:scale-105 shadow-lg active:scale-95"
+          >
+            Confirm 💌
+          </button>
+        )}
+      </div>
+    );
+  }
+
+  // ── Main view ────────────────────────────────────────────────────
   return (
-    <div className="flex flex-col flex-1 items-center justify-center bg-zinc-50 font-sans dark:bg-black">
-      <main className="flex flex-1 w-full max-w-3xl flex-col items-center justify-between py-32 px-16 bg-white dark:bg-black sm:items-start">
+    <div
+      className="relative flex flex-col items-center justify-center min-h-screen overflow-hidden transition-colors duration-500 select-none"
+      style={{ backgroundColor: bgColor }}
+    >
+      {/* Movie Poster */}
+      <div className="mb-8 rounded-xl overflow-hidden shadow-2xl border-4 border-white/30 hover:border-white/60 transition-colors">
         <Image
-          className="dark:invert"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={100}
-          height={20}
+          src="/obsession_poster.jpg"
+          alt="Movie Poster"
+          width={220}
+          height={330}
+          className="object-cover"
           priority
         />
-        <div className="flex flex-col items-center gap-6 text-center sm:items-start sm:text-left">
-          <h1 className="max-w-xs text-3xl font-semibold leading-10 tracking-tight text-black dark:text-zinc-50">
-            To get started, edit the page.tsx file.
-          </h1>
-          <p className="max-w-md text-lg leading-8 text-zinc-600 dark:text-zinc-400">
-            Looking for a starting point or more instructions? Head over to{" "}
-            <a
-              href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Templates
-            </a>{" "}
-            or the{" "}
-            <a
-              href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Learning
-            </a>{" "}
-            center.
-          </p>
-        </div>
-        <div className="flex flex-col gap-4 text-base font-medium sm:flex-row">
-          <a
-            className="flex h-12 w-full items-center justify-center gap-2 rounded-full bg-foreground px-5 text-background transition-colors hover:bg-[#383838] dark:hover:bg-[#ccc] md:w-[158px]"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
+      </div>
+
+      {/* Question */}
+      <h1 className="text-4xl md:text-5xl font-bold text-white drop-shadow-lg mb-12 text-center px-4">
+        Wanna go see a movie with me ?
+      </h1>
+
+      {/* Buttons */}
+      <div className="flex gap-8 items-center">
+        <button
+          onClick={handleYesClick}
+          className="px-8 py-4 bg-green-500 text-white font-bold rounded-full hover:bg-green-600 transition-all shadow-lg origin-center active:scale-95"
+          style={{
+            transform: `scale(${yesButtonScale})`,
+            maxWidth: "90vw",
+          }}
+        >
+          Yes 💚
+        </button>
+
+        {/* No button — in normal flow until first hover */}
+        {!hasMoved && (
+          <button
+            onMouseEnter={handleNoHover}
+            className="px-8 py-4 bg-red-500 text-white font-bold rounded-full shadow-lg cursor-default"
           >
-            <Image
-              className="dark:invert"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={16}
-              height={16}
-            />
-            Deploy Now
-          </a>
-          <a
-            className="flex h-12 w-full items-center justify-center rounded-full border border-solid border-black/[.08] px-5 transition-colors hover:border-transparent hover:bg-black/[.04] dark:border-white/[.145] dark:hover:bg-[#1a1a1a] md:w-[158px]"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
+            No 💔
+          </button>
+        )}
+      </div>
+
+      {/* No button — fixed position after first hover */}
+      {hasMoved && (
+        <button
+          onMouseEnter={handleNoHover}
+          onTouchStart={(e) => {
+            e.preventDefault();
+            handleNoHover();
+          }}
+          className="px-8 py-4 bg-red-500 text-white font-bold rounded-full shadow-lg cursor-default"
+          style={{
+            position: "fixed",
+            left: noButtonPos.x,
+            top: noButtonPos.y,
+            zIndex: 50,
+            transition: "none",
+          }}
+        >
+          No 💔
+        </button>
+      )}
+
+      {/* Messages & media */}
+      <div className="mt-8 flex flex-col items-center gap-6 max-w-lg">
+        {activeMessages.map((msg) => (
+          <div
+            key={msg.threshold}
+            className="flex flex-col items-center gap-3 animate-fade-in"
           >
-            Documentation
-          </a>
-        </div>
-      </main>
+            {msg.text && (
+              <p className="text-2xl md:text-3xl font-bold text-white drop-shadow-lg text-center px-4">
+                {msg.text}
+              </p>
+            )}
+
+            {/* Video for threshold 10 */}
+            {msg.isVideo && showVideo ? (
+              <div className="flex flex-col items-center gap-3">
+                <video
+                  src="/NoNoNo.mp4"
+                  autoPlay
+                  loop
+                  muted
+                  playsInline
+                  className="rounded-xl shadow-2xl max-w-xs w-full"
+                />
+                {/* Image placeholder alongside video */}
+                <div className="w-36 h-36 border-2 border-dashed border-white/40 rounded-xl flex flex-col items-center justify-center text-white/50 text-xs bg-white/5 gap-1">
+                  <span>🖼️</span>
+                  <span className="break-all text-center px-1">
+                    {msg.image}
+                  </span>
+                </div>
+              </div>
+            ) : (
+              /* Image placeholder for non-video messages */
+              <div className="w-36 h-36 border-2 border-dashed border-white/40 rounded-xl flex flex-col items-center justify-center text-white/50 text-xs bg-white/5 gap-1">
+                <span>🖼️</span>
+                <span className="break-all text-center px-1">{msg.image}</span>
+              </div>
+            )}
+          </div>
+        ))}
+      </div>
     </div>
   );
 }
