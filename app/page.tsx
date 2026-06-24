@@ -29,8 +29,9 @@ const MESSAGES: MessageDef[] = [
   { threshold: 10, text: "", image: "/message_10.gif", isVideo: true },
 ];
 
-function getActiveMessages(attempts: number): MessageDef[] {
-  return MESSAGES.filter((m) => m.threshold <= attempts);
+function getActiveMessage(attempts: number): MessageDef | null {
+  const matched = MESSAGES.filter((m) => m.threshold <= attempts);
+  return matched.length > 0 ? matched[matched.length - 1] : null;
 }
 
 export default function Home() {
@@ -74,7 +75,7 @@ export default function Home() {
 
   const yesButtonScale = 1 + noAttempts * 0.15;
   const bgColor = yesClicked ? "rgb(255, 182, 193)" : getBackgroundColor(noAttempts);
-  const activeMessages = getActiveMessages(noAttempts);
+  const activeMessage = getActiveMessage(noAttempts);
   const showVideo = noAttempts >= 10;
 
   // ── Date confirmed view ──────────────────────────────────────────
@@ -156,20 +157,18 @@ export default function Home() {
         </button>
       )}
 
-      {/* Messages & media */}
-      <div className="mt-8 flex flex-col items-center gap-6 max-w-lg">
-        {activeMessages.map((msg) => (
-          <div key={msg.threshold} className="flex flex-col items-center gap-3 animate-fade-in">
-            {msg.text && <p className="text-2xl md:text-3xl font-bold text-white drop-shadow-lg text-center px-4">{msg.text}</p>}
+      {/* Message & media */}
+      {activeMessage && (
+        <div key={activeMessage.threshold} className="mt-8 flex flex-col items-center gap-3 max-w-lg animate-fade-in">
+          {activeMessage.text && <p className="text-2xl md:text-3xl font-bold text-white drop-shadow-lg text-center px-4">{activeMessage.text}</p>}
 
-            {/* Image placeholder */}
-            <div className="w-36 h-36 border-2 border-dashed border-white/40 rounded-xl flex flex-col items-center justify-center text-white/50 text-xs bg-white/5 gap-1">
-              <span>🖼️</span>
-              <span className="break-all text-center px-1">{msg.image}</span>
-            </div>
+          {/* Image placeholder */}
+          <div className="w-36 h-36 border-2 border-dashed border-white/40 rounded-xl flex flex-col items-center justify-center text-white/50 text-xs bg-white/5 gap-1">
+            <span>🖼️</span>
+            <span className="break-all text-center px-1">{activeMessage.image}</span>
           </div>
-        ))}
-      </div>
+        </div>
+      )}
     </div>
   );
 }
