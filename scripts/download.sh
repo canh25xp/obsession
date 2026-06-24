@@ -48,7 +48,7 @@ echo "✂️  Trimming from ${TRIM_START} to ${TRIM_END}..."
 ffmpeg -i "$FULL_OUTPUT" \
   -ss "$TRIM_START" \
   -to "$TRIM_END" \
-  -c copy \
+  -c:v libx264 -c:a aac \
   -y \
   "$TRIM_OUTPUT" 2>/dev/null
 
