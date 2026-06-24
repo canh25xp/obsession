@@ -25,11 +25,7 @@ interface MessageDef {
 const MESSAGES: MessageDef[] = [
   { threshold: 3, text: "That's not an option", image: "/message_3.png" },
   { threshold: 5, text: "Please ?", image: "/message_5.gif" },
-  {
-    threshold: 8,
-    text: "You really gonna make me beg aren't you ?",
-    image: "/message_8.gif",
-  },
+  { threshold: 8, text: "You really gonna make me beg aren't you ?", image: "/message_8.gif" },
   { threshold: 10, text: "", image: "/message_10.gif", isVideo: true },
 ];
 
@@ -56,11 +52,8 @@ export default function Home() {
     const buttonWidth = 130;
     const buttonHeight = 56;
     const padding = 20;
-    const x =
-      Math.random() * (window.innerWidth - buttonWidth - padding * 2) + padding;
-    const y =
-      Math.random() * (window.innerHeight - buttonHeight - padding * 2) +
-      padding;
+    const x = Math.random() * (window.innerWidth - buttonWidth - padding * 2) + padding;
+    const y = Math.random() * (window.innerHeight - buttonHeight - padding * 2) + padding;
     setNoButtonPos({ x, y });
   }, [noAttempts]);
 
@@ -80,23 +73,16 @@ export default function Home() {
   };
 
   const yesButtonScale = 1 + noAttempts * 0.15;
-  const bgColor = yesClicked
-    ? "rgb(255, 182, 193)"
-    : getBackgroundColor(noAttempts);
+  const bgColor = yesClicked ? "rgb(255, 182, 193)" : getBackgroundColor(noAttempts);
   const activeMessages = getActiveMessages(noAttempts);
   const showVideo = noAttempts >= 10;
 
   // ── Date confirmed view ──────────────────────────────────────────
   if (dateConfirmed && selectedDate) {
     return (
-      <div
-        className="flex flex-col items-center justify-center min-h-screen transition-colors duration-700"
-        style={{ backgroundColor: bgColor }}
-      >
+      <div className="flex flex-col items-center justify-center min-h-screen transition-colors duration-700" style={{ backgroundColor: bgColor }}>
         <div className="text-7xl mb-6 animate-bounce">🎬💕</div>
-        <h1 className="text-5xl md:text-6xl font-bold text-white drop-shadow-lg text-center px-4">
-          See you on {getDayOfWeek(selectedDate)} !
-        </h1>
+        <h1 className="text-5xl md:text-6xl font-bold text-white drop-shadow-lg text-center px-4">See you on {getDayOfWeek(selectedDate)} !</h1>
       </div>
     );
   }
@@ -104,25 +90,12 @@ export default function Home() {
   // ── Calendar picker view ─────────────────────────────────────────
   if (yesClicked) {
     return (
-      <div
-        className="flex flex-col items-center justify-center min-h-screen gap-8 transition-colors duration-700"
-        style={{ backgroundColor: bgColor }}
-      >
+      <div className="flex flex-col items-center justify-center min-h-screen gap-8 transition-colors duration-700" style={{ backgroundColor: bgColor }}>
         <div className="text-7xl animate-bounce">🎉</div>
-        <h1 className="text-4xl md:text-5xl font-bold text-white drop-shadow-lg text-center px-4">
-          Yay! Pick a date 🎬
-        </h1>
-        <input
-          type="datetime-local"
-          value={selectedDate}
-          onChange={(e) => setSelectedDate(e.target.value)}
-          className="px-6 py-4 rounded-xl text-lg border-2 border-pink-300 focus:border-pink-500 outline-none shadow-lg cursor-pointer"
-        />
+        <h1 className="text-4xl md:text-5xl font-bold text-white drop-shadow-lg text-center px-4">Yay! Pick a date 🎬</h1>
+        <input type="datetime-local" value={selectedDate} onChange={(e) => setSelectedDate(e.target.value)} className="px-6 py-4 rounded-xl text-lg border-2 border-pink-300 focus:border-pink-500 outline-none shadow-lg cursor-pointer" />
         {selectedDate && (
-          <button
-            onClick={handleDateConfirm}
-            className="px-10 py-4 bg-pink-500 text-white text-xl font-bold rounded-full hover:bg-pink-600 transition-all hover:scale-105 shadow-lg active:scale-95"
-          >
+          <button onClick={handleDateConfirm} className="px-10 py-4 bg-pink-500 text-white text-xl font-bold rounded-full hover:bg-pink-600 transition-all hover:scale-105 shadow-lg active:scale-95">
             Confirm 💌
           </button>
         )}
@@ -132,38 +105,14 @@ export default function Home() {
 
   // ── Main view ────────────────────────────────────────────────────
   return (
-    <div
-      className="relative flex flex-col items-center justify-center min-h-screen overflow-hidden transition-colors duration-500 select-none"
-      style={{ backgroundColor: bgColor }}
-    >
+    <div className="relative flex flex-col items-center justify-center min-h-screen overflow-hidden transition-colors duration-500 select-none" style={{ backgroundColor: bgColor }}>
       {/* Movie Poster / Video */}
       <div className="mb-8 rounded-xl overflow-hidden shadow-2xl border-4 border-white/30 hover:border-white/60 transition-colors">
-        {showVideo ? (
-          <video
-            src="/NoNoNo.mp4"
-            autoPlay
-            loop
-            muted
-            playsInline
-            className="object-cover"
-            style={{ width: 220, height: 330 }}
-          />
-        ) : (
-          <Image
-            src="/obsession_poster.jpg"
-            alt="Movie Poster"
-            width={220}
-            height={330}
-            className="object-cover"
-            priority
-          />
-        )}
+        {showVideo ? <video src="/NoNoNo.mp4" autoPlay loop muted playsInline className="object-cover" style={{ width: 220, height: 330 }} /> : <Image src="/obsession_poster.jpg" alt="Movie Poster" width={220} height={330} className="object-cover" priority />}
       </div>
 
       {/* Question */}
-      <h1 className="text-4xl md:text-5xl font-bold text-white drop-shadow-lg mb-12 text-center px-4">
-        Wanna go see a movie with me ?
-      </h1>
+      <h1 className="text-4xl md:text-5xl font-bold text-white drop-shadow-lg mb-12 text-center px-4">Wanna go see a movie with me ?</h1>
 
       {/* Buttons */}
       <div className="flex gap-8 items-center">
@@ -180,10 +129,7 @@ export default function Home() {
 
         {/* No button — in normal flow until first hover */}
         {!hasMoved && (
-          <button
-            onMouseEnter={handleNoHover}
-            className="px-8 py-4 bg-red-500 text-white font-bold rounded-full shadow-lg cursor-default"
-          >
+          <button onMouseEnter={handleNoHover} className="px-8 py-4 bg-red-500 text-white font-bold rounded-full shadow-lg cursor-default">
             No 💔
           </button>
         )}
@@ -213,15 +159,8 @@ export default function Home() {
       {/* Messages & media */}
       <div className="mt-8 flex flex-col items-center gap-6 max-w-lg">
         {activeMessages.map((msg) => (
-          <div
-            key={msg.threshold}
-            className="flex flex-col items-center gap-3 animate-fade-in"
-          >
-            {msg.text && (
-              <p className="text-2xl md:text-3xl font-bold text-white drop-shadow-lg text-center px-4">
-                {msg.text}
-              </p>
-            )}
+          <div key={msg.threshold} className="flex flex-col items-center gap-3 animate-fade-in">
+            {msg.text && <p className="text-2xl md:text-3xl font-bold text-white drop-shadow-lg text-center px-4">{msg.text}</p>}
 
             {/* Image placeholder */}
             <div className="w-36 h-36 border-2 border-dashed border-white/40 rounded-xl flex flex-col items-center justify-center text-white/50 text-xs bg-white/5 gap-1">
