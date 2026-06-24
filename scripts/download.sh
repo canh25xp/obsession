@@ -39,25 +39,17 @@ mv "$TEMP_FILE" "$FULL_OUTPUT"
 
 echo "✅ Crop complete: $FULL_OUTPUT"
 
-# Save full-length cropped video before trimming
-FULL_LENGTH_OUTPUT="${FULL_OUTPUT%.mp4}_full.mp4"
-cp "$FULL_OUTPUT" "$FULL_LENGTH_OUTPUT"
-echo "💾 Full-length video saved: $FULL_LENGTH_OUTPUT"
-
 # Trim to 0:50–1:00
 TRIM_START="00:00:50"
 TRIM_END="00:01:00"
+TRIM_OUTPUT="$PROJECT_ROOT/public/NoNoNo.mp4"
 echo "✂️  Trimming from ${TRIM_START} to ${TRIM_END}..."
-
-TEMP_FILE="${FULL_OUTPUT%.mp4}_temp.mp4"
 
 ffmpeg -i "$FULL_OUTPUT" \
   -ss "$TRIM_START" \
   -to "$TRIM_END" \
   -c copy \
   -y \
-  "$TEMP_FILE" 2>/dev/null
+  "$TRIM_OUTPUT" 2>/dev/null
 
-mv "$TEMP_FILE" "$FULL_OUTPUT"
-
-echo "✅ Trim complete: $FULL_OUTPUT"
+echo "✅ Trim complete: $TRIM_OUTPUT"
