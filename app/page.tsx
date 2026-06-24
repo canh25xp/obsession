@@ -136,16 +136,28 @@ export default function Home() {
       className="relative flex flex-col items-center justify-center min-h-screen overflow-hidden transition-colors duration-500 select-none"
       style={{ backgroundColor: bgColor }}
     >
-      {/* Movie Poster */}
+      {/* Movie Poster / Video */}
       <div className="mb-8 rounded-xl overflow-hidden shadow-2xl border-4 border-white/30 hover:border-white/60 transition-colors">
-        <Image
-          src="/obsession_poster.jpg"
-          alt="Movie Poster"
-          width={220}
-          height={330}
-          className="object-cover"
-          priority
-        />
+        {showVideo ? (
+          <video
+            src="/NoNoNo.mp4"
+            autoPlay
+            loop
+            muted
+            playsInline
+            className="object-cover"
+            style={{ width: 220, height: 330 }}
+          />
+        ) : (
+          <Image
+            src="/obsession_poster.jpg"
+            alt="Movie Poster"
+            width={220}
+            height={330}
+            className="object-cover"
+            priority
+          />
+        )}
       </div>
 
       {/* Question */}
@@ -211,32 +223,11 @@ export default function Home() {
               </p>
             )}
 
-            {/* Video for threshold 10 */}
-            {msg.isVideo && showVideo ? (
-              <div className="flex flex-col items-center gap-3">
-                <video
-                  src="/NoNoNo.mp4"
-                  autoPlay
-                  loop
-                  muted
-                  playsInline
-                  className="rounded-xl shadow-2xl max-w-xs w-full"
-                />
-                {/* Image placeholder alongside video */}
-                <div className="w-36 h-36 border-2 border-dashed border-white/40 rounded-xl flex flex-col items-center justify-center text-white/50 text-xs bg-white/5 gap-1">
-                  <span>🖼️</span>
-                  <span className="break-all text-center px-1">
-                    {msg.image}
-                  </span>
-                </div>
-              </div>
-            ) : (
-              /* Image placeholder for non-video messages */
-              <div className="w-36 h-36 border-2 border-dashed border-white/40 rounded-xl flex flex-col items-center justify-center text-white/50 text-xs bg-white/5 gap-1">
-                <span>🖼️</span>
-                <span className="break-all text-center px-1">{msg.image}</span>
-              </div>
-            )}
+            {/* Image placeholder */}
+            <div className="w-36 h-36 border-2 border-dashed border-white/40 rounded-xl flex flex-col items-center justify-center text-white/50 text-xs bg-white/5 gap-1">
+              <span>🖼️</span>
+              <span className="break-all text-center px-1">{msg.image}</span>
+            </div>
           </div>
         ))}
       </div>
