@@ -45,8 +45,8 @@ cp "$FULL_OUTPUT" "$FULL_LENGTH_OUTPUT"
 echo "💾 Full-length video saved: $FULL_LENGTH_OUTPUT"
 
 # Trim to 0:50–1:00
-TRIM_START="0:50"
-TRIM_END="1:00"
+TRIM_START="00:00:50"
+TRIM_END="00:01:00"
 echo "✂️  Trimming from ${TRIM_START} to ${TRIM_END}..."
 
 TEMP_FILE="${FULL_OUTPUT%.mp4}_temp.mp4"
