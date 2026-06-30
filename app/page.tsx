@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useCallback } from "react";
+import { useState, useCallback, useRef } from "react";
 import Image from "next/image";
 
 const PINK_PASTEL = { r: 255, g: 182, b: 193 };
@@ -45,6 +45,10 @@ export default function Home() {
   });
   const [hasMoved, setHasMoved] = useState(false);
 
+  const posterRef = useRef<HTMLDivElement>(null);
+  const yesButtonRef = useRef<HTMLButtonElement>(null);
+  const messageRef = useRef<HTMLDivElement>(null);
+
   const handleNoHover = useCallback(() => {
     const newAttempts = noAttempts + 1;
     setNoAttempts(newAttempts);
@@ -53,9 +57,43 @@ export default function Home() {
     const buttonWidth = 130;
     const buttonHeight = 56;
     const padding = 20;
-    const x = Math.random() * (window.innerWidth - buttonWidth - padding * 2) + padding;
-    const y = Math.random() * (window.innerHeight - buttonHeight - padding * 2) + padding;
-    setNoButtonPos({ x, y });
+
+    // Collect exclusion zones from existing on-screen elements so the
+    // No button never lands on top of the poster, Yes button, or message.
+    const exclusionZones: DOMRect[] = [];
+    if (posterRef.current) exclusionZones.push(posterRef.current.getBoundingClientRect());
+    if (yesButtonRef.current) exclusionZones.push(yesButtonRef.current.getBoundingClientRect());
+    if (messageRef.current) exclusionZones.push(messageRef.current.getBoundingClientRect());
+
+    const buffer = 16; // extra spacing around exclusion zones
+
+    const overlaps = (x: number, y: number): boolean => {
+      const left = x;
+      const top = y;
+      const right = x + buttonWidth;
+      const bottom = y + buttonHeight;
+      return exclusionZones.some(
+        (zone) =>
+          left < zone.right + buffer &&
+          right > zone.left - buffer &&
+          top < zone.bottom + buffer &&
+          bottom > zone.top - buffer
+      );
+    };
+
+    const maxX = window.innerWidth - buttonWidth - padding;
+    const maxY = window.innerHeight - buttonHeight - padding;
+
+    let chosenX = padding;
+    let chosenY = padding;
+    for (let i = 0; i < 100; i++) {
+      const x = Math.random() * (maxX - padding) + padding;
+      const y = Math.random() * (maxY - padding) + padding;
+      chosenX = x;
+      chosenY = y;
+      if (!overlaps(x, y)) break; // found a non-overlapping spot
+    }
+    setNoButtonPos({ x: chosenX, y: chosenY });
   }, [noAttempts]);
 
   const handleYesClick = useCallback(() => {
@@ -108,7 +146,7 @@ export default function Home() {
   return (
     <div className="relative flex flex-col items-center justify-center min-h-screen overflow-hidden transition-colors duration-500 select-none" style={{ backgroundColor: bgColor }}>
       {/* Movie Poster / Video */}
-      <div className="mb-8 rounded-xl overflow-hidden shadow-2xl border-4 border-white/30 hover:border-white/60 transition-colors">
+      <div ref={posterRef} className="mb-8 rounded-xl overflow-hidden shadow-2xl border-4 border-white/30 hover:border-white/60 transition-colors">
         {showVideo ? <video src="/NoNoNo.mp4" autoPlay loop muted playsInline className="object-cover" style={{ width: 220, height: 330 }} /> : <Image src="/obsession_poster.jpg" alt="Movie Poster" width={220} height={330} className="object-cover" priority />}
       </div>
 
@@ -118,6 +156,7 @@ export default function Home() {
       {/* Buttons */}
       <div className="flex gap-8 items-center">
         <button
+          ref={yesButtonRef}
           onClick={handleYesClick}
           className="px-8 py-4 bg-green-300 text-white font-bold rounded-full hover:bg-green-600 transition-all shadow-lg origin-center active:scale-95"
           style={{
@@ -159,7 +198,7 @@ export default function Home() {
 
       {/* Message & media */}
       {activeMessage && (
-        <div key={activeMessage.threshold} className="mt-8 flex flex-col items-center gap-3 max-w-lg animate-fade-in">
+        <div ref={messageRef} key={activeMessage.threshold} className="mt-8 flex flex-col items-center gap-3 max-w-lg animate-fade-in">
           {activeMessage.text && <p className="text-2xl md:text-3xl font-bold text-white drop-shadow-lg text-center px-4">{activeMessage.text}</p>}
 
           {/* Image placeholder */}
