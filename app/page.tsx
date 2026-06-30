@@ -119,7 +119,7 @@ export default function Home() {
       <div className="flex gap-8 items-center">
         <button
           onClick={handleYesClick}
-          className="px-8 py-4 bg-green-500 text-white font-bold rounded-full hover:bg-green-600 transition-all shadow-lg origin-center active:scale-95"
+          className="px-8 py-4 bg-green-300 text-white font-bold rounded-full hover:bg-green-600 transition-all shadow-lg origin-center active:scale-95"
           style={{
             transform: `scale(${yesButtonScale})`,
             maxWidth: "90vw",
@@ -130,7 +130,7 @@ export default function Home() {
 
         {/* No button — in normal flow until first hover */}
         {!hasMoved && (
-          <button onMouseEnter={handleNoHover} className="px-8 py-4 bg-red-500 text-white font-bold rounded-full shadow-lg cursor-default">
+          <button onMouseEnter={handleNoHover} className="px-8 py-4 bg-red-300 text-white font-bold rounded-full shadow-lg cursor-default">
             No 💔
           </button>
         )}
@@ -144,7 +144,7 @@ export default function Home() {
             e.preventDefault();
             handleNoHover();
           }}
-          className="px-8 py-4 bg-red-500 text-white font-bold rounded-full shadow-lg cursor-default"
+          className="px-8 py-4 bg-red-300 text-white font-bold rounded-full shadow-lg cursor-default"
           style={{
             position: "fixed",
             left: noButtonPos.x,
