@@ -125,7 +125,7 @@ export default function Home() {
             maxWidth: "90vw",
           }}
         >
-          Yes 💚
+          Yes 🩷
         </button>
 
         {/* No button — in normal flow until first hover */}
