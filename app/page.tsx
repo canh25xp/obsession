@@ -5,10 +5,10 @@ import Image from "next/image";
 
 const PINK_PASTEL = { r: 255, g: 182, b: 193 };
 const DARK = { r: 25, g: 5, b: 10 };
+const MAX_ATTEMPTS = 10;
 
 function getBackgroundColor(attempts: number): string {
-  const maxAttempts = 15;
-  const t = Math.min(attempts / maxAttempts, 1);
+  const t = Math.min(attempts / MAX_ATTEMPTS, 1);
   const r = Math.round(PINK_PASTEL.r + t * (DARK.r - PINK_PASTEL.r));
   const g = Math.round(PINK_PASTEL.g + t * (DARK.g - PINK_PASTEL.g));
   const b = Math.round(PINK_PASTEL.b + t * (DARK.b - PINK_PASTEL.b));
@@ -37,8 +37,6 @@ function getActiveMessage(attempts: number): MessageDef | null {
 export default function Home() {
   const [noAttempts, setNoAttempts] = useState(0);
   const [yesClicked, setYesClicked] = useState(false);
-  const [selectedDate, setSelectedDate] = useState("");
-  const [dateConfirmed, setDateConfirmed] = useState(false);
   const [noButtonPos, setNoButtonPos] = useState<{ x: number; y: number }>({
     x: 0,
     y: 0,
@@ -100,44 +98,17 @@ export default function Home() {
     setYesClicked(true);
   }, []);
 
-  const handleDateConfirm = useCallback(() => {
-    if (selectedDate) {
-      setDateConfirmed(true);
-    }
-  }, [selectedDate]);
-
-  const getDayOfWeek = (dateStr: string): string => {
-    const date = new Date(dateStr);
-    return new Intl.DateTimeFormat("en-US", { weekday: "long" }).format(date);
-  };
-
-  const yesButtonScale = 1 + noAttempts * 0.15;
+  const yesButtonScale = 1 + Math.min(noAttempts, MAX_ATTEMPTS) * 0.15;
   const bgColor = yesClicked ? "rgb(255, 182, 193)" : getBackgroundColor(noAttempts);
   const activeMessage = getActiveMessage(noAttempts);
-  const showVideo = noAttempts >= 10;
+  const showVideo = noAttempts >= MAX_ATTEMPTS;
 
-  // ── Date confirmed view ──────────────────────────────────────────
-  if (dateConfirmed && selectedDate) {
+  // ── Yes clicked view ─────────────────────────────────────────────
+  if (yesClicked) {
     return (
       <div className="flex flex-col items-center justify-center min-h-screen transition-colors duration-700" style={{ backgroundColor: bgColor }}>
         <div className="text-7xl mb-6 animate-bounce">🎬💕</div>
-        <h1 className="text-5xl md:text-6xl font-bold text-white drop-shadow-lg text-center px-4">See you on {getDayOfWeek(selectedDate)} !</h1>
-      </div>
-    );
-  }
-
-  // ── Calendar picker view ─────────────────────────────────────────
-  if (yesClicked) {
-    return (
-      <div className="flex flex-col items-center justify-center min-h-screen gap-8 transition-colors duration-700" style={{ backgroundColor: bgColor }}>
-        <div className="text-7xl animate-bounce">🎉</div>
-        <h1 className="text-4xl md:text-5xl font-bold text-white drop-shadow-lg text-center px-4">Yay! Pick a date 🎬</h1>
-        <input type="datetime-local" value={selectedDate} onChange={(e) => setSelectedDate(e.target.value)} className="px-6 py-4 rounded-xl text-lg border-2 border-pink-300 focus:border-pink-500 outline-none shadow-lg cursor-pointer" />
-        {selectedDate && (
-          <button onClick={handleDateConfirm} className="px-10 py-4 bg-pink-500 text-white text-xl font-bold rounded-full hover:bg-pink-600 transition-all hover:scale-105 shadow-lg active:scale-95">
-            Confirm 💌
-          </button>
-        )}
+        <h1 className="text-5xl md:text-6xl font-bold text-white drop-shadow-lg text-center px-4">see you on Friday !</h1>
       </div>
     );
   }
