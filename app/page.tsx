@@ -187,7 +187,7 @@ export default function Home() {
       </div>
 
       {/* Question */}
-      <h1 className="text-4xl md:text-5xl font-bold text-white drop-shadow-lg mb-8 text-center px-4">Wanna go see a movie with me ?</h1>
+      <h1 className="text-4xl md:text-5xl font-bold text-white drop-shadow-lg mb-8 text-center px-4">Daily reminder that we have a movie to watch together. You still want to go right ?</h1>
 
       {/* Buttons */}
       <div className="flex gap-8 items-center">
