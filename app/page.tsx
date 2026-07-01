@@ -157,7 +157,7 @@ export default function Home() {
     return (
       <div className="flex flex-col items-center justify-center min-h-screen transition-colors duration-700" style={{ backgroundColor: bgColor }}>
         <div className="text-7xl mb-6 animate-bounce">🎬💕</div>
-        <h1 className="text-5xl md:text-6xl font-bold text-white drop-shadow-lg text-center px-4">see you on Friday !</h1>
+        <h1 className="text-5xl md:text-6xl font-bold text-white drop-shadow-lg text-center px-4">Yay. See you on Fridayyy !</h1>
       </div>
     );
   }
