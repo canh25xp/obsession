@@ -165,6 +165,13 @@ export default function Home() {
   // ── Main view ────────────────────────────────────────────────────
   return (
     <div className="relative flex flex-col items-center justify-center min-h-screen overflow-hidden transition-colors duration-500 select-none" style={{ backgroundColor: bgColor }}>
+      {/* Message & media */}
+      {activeMessage && (
+        <div ref={messageRef} key={activeMessage.threshold} className="mt-2 mb-10 flex flex-col items-center gap-3 max-w-lg animate-fade-in">
+          {activeMessage.text && <p className="text-2xl md:text-3xl font-bold text-white drop-shadow-lg text-center px-4">{activeMessage.text}</p>}
+        </div>
+      )}
+
       {/* Movie Poster / Video */}
       <div ref={posterRef} className="mb-8 rounded-xl overflow-hidden shadow-2xl border-4 border-white/30 hover:border-white/60 transition-colors">
         {activeMessage?.video ? (
@@ -181,13 +188,6 @@ export default function Home() {
 
       {/* Question */}
       <h1 className="text-4xl md:text-5xl font-bold text-white drop-shadow-lg mb-8 text-center px-4">Wanna go see a movie with me ?</h1>
-
-      {/* Message & media */}
-      {activeMessage && (
-        <div ref={messageRef} key={activeMessage.threshold} className="mt-2 mb-10 flex flex-col items-center gap-3 max-w-lg animate-fade-in">
-          {activeMessage.text && <p className="text-2xl md:text-3xl font-bold text-white drop-shadow-lg text-center px-4">{activeMessage.text}</p>}
-        </div>
-      )}
 
       {/* Buttons */}
       <div className="flex gap-8 items-center">
