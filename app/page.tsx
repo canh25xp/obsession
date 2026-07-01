@@ -126,9 +126,9 @@ export default function Home() {
         {activeMessage?.video ? (
           <video src={activeMessage.video} autoPlay loop muted playsInline className="object-cover" style={{ width: 220, height: 330 }} />
         ) : activeMessage?.image ? (
-          <Image src={activeMessage.image} alt="Message" width={220} height={330} className="object-cover" unoptimized priority />
+          <Image src={activeMessage.image} alt="Message" width={220} height={330} className="object-cover" unoptimized priority style={{ width: "auto", height: "auto" }} />
         ) : (
-          <Image src="/obsession_poster.jpg" alt="Movie Poster" width={220} height={330} className="object-cover" priority />
+          <Image src="/obsession_poster.jpg" alt="Movie Poster" width={220} height={330} className="object-cover" priority style={{ width: "auto", height: "auto" }} />
         )}
       </div>
 
