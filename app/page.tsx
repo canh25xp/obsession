@@ -18,15 +18,15 @@ function getBackgroundColor(attempts: number): string {
 interface MessageDef {
   threshold: number;
   text: string;
-  image: string;
-  isVideo?: boolean;
+  image?: string;
+  video?: string;
 }
 
 const MESSAGES: MessageDef[] = [
   { threshold: 3, text: "That's not an option", image: "/message_3.png" },
-  { threshold: 5, text: "Please ?", image: "/message_5.gif" },
+  { threshold: 5, text: "Please ?", image: "/inde_navarrette_frown.jpg" },
   { threshold: 8, text: "You really gonna make me beg aren't you ?", image: "/message_8.gif" },
-  { threshold: 10, text: "", image: "/message_10.gif", isVideo: true },
+  { threshold: 10, text: "", video: "/NoNoNo.mp4" },
 ];
 
 function getActiveMessage(attempts: number): MessageDef | null {
@@ -101,7 +101,6 @@ export default function Home() {
   const yesButtonScale = 1 + Math.min(noAttempts, MAX_ATTEMPTS) * 0.15;
   const bgColor = yesClicked ? "rgb(255, 182, 193)" : getBackgroundColor(noAttempts);
   const activeMessage = getActiveMessage(noAttempts);
-  const showVideo = noAttempts >= MAX_ATTEMPTS;
 
   // ── Yes clicked view ─────────────────────────────────────────────
   if (yesClicked) {
@@ -118,7 +117,13 @@ export default function Home() {
     <div className="relative flex flex-col items-center justify-center min-h-screen overflow-hidden transition-colors duration-500 select-none" style={{ backgroundColor: bgColor }}>
       {/* Movie Poster / Video */}
       <div ref={posterRef} className="mb-8 rounded-xl overflow-hidden shadow-2xl border-4 border-white/30 hover:border-white/60 transition-colors">
-        {showVideo ? <video src="/NoNoNo.mp4" autoPlay loop muted playsInline className="object-cover" style={{ width: 220, height: 330 }} /> : <Image src="/obsession_poster.jpg" alt="Movie Poster" width={220} height={330} className="object-cover" priority />}
+        {activeMessage?.video ? (
+          <video src={activeMessage.video} autoPlay loop muted playsInline className="object-cover" style={{ width: 220, height: 330 }} />
+        ) : activeMessage?.image ? (
+          <Image src={activeMessage.image} alt="Message" width={220} height={330} className="object-cover" unoptimized priority />
+        ) : (
+          <Image src="/obsession_poster.jpg" alt="Movie Poster" width={220} height={330} className="object-cover" priority />
+        )}
       </div>
 
       {/* Question */}
@@ -128,12 +133,6 @@ export default function Home() {
       {activeMessage && (
         <div ref={messageRef} key={activeMessage.threshold} className="mt-2 mb-10 flex flex-col items-center gap-3 max-w-lg animate-fade-in">
           {activeMessage.text && <p className="text-2xl md:text-3xl font-bold text-white drop-shadow-lg text-center px-4">{activeMessage.text}</p>}
-
-          {/* Image placeholder */}
-          <div className="w-36 h-36 border-2 border-dashed border-white/40 rounded-xl flex flex-col items-center justify-center text-white/50 text-xs bg-white/5 gap-1">
-            <span>🖼️</span>
-            <span className="break-all text-center px-1">{activeMessage.image}</span>
-          </div>
         </div>
       )}
 
