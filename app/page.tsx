@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useCallback, useRef } from "react";
+import { useState, useCallback, useRef, useEffect } from "react";
 import Image from "next/image";
 
 const PINK_PASTEL = { r: 255, g: 182, b: 193 };
@@ -46,6 +46,29 @@ function getActiveMessage(attempts: number): MessageDef | null {
   return { ...last, image, video };
 }
 
+interface SrtCue {
+  start: number;
+  end: number;
+  text: string;
+}
+
+function parseSrt(srtContent: string): SrtCue[] {
+  const cues: SrtCue[] = [];
+  const blocks = srtContent.trim().split(/\n\s*\n/);
+  for (const block of blocks) {
+    const lines = block.trim().split("\n");
+    const timeLineIdx = lines.findIndex((l) => l.includes("-->"));
+    if (timeLineIdx === -1) continue;
+    const match = lines[timeLineIdx].match(/(\d{2}):(\d{2}):(\d{2})[,.](\d{3})\s*-->\s*(\d{2}):(\d{2}):(\d{2})[,.](\d{3})/);
+    if (!match) continue;
+    const start = parseInt(match[1]) * 3600 + parseInt(match[2]) * 60 + parseInt(match[3]) + parseInt(match[4]) / 1000;
+    const end = parseInt(match[5]) * 3600 + parseInt(match[6]) * 60 + parseInt(match[7]) + parseInt(match[8]) / 1000;
+    const text = lines.slice(timeLineIdx + 1).join("\n");
+    cues.push({ start, end, text });
+  }
+  return cues;
+}
+
 export default function Home() {
   const [noAttempts, setNoAttempts] = useState(0);
   const [yesClicked, setYesClicked] = useState(false);
@@ -58,6 +81,9 @@ export default function Home() {
   const posterRef = useRef<HTMLDivElement>(null);
   const yesButtonRef = useRef<HTMLButtonElement>(null);
   const messageRef = useRef<HTMLDivElement>(null);
+  const videoRef = useRef<HTMLVideoElement>(null);
+  const [subtitles, setSubtitles] = useState<SrtCue[]>([]);
+  const [currentSubtitle, setCurrentSubtitle] = useState("");
 
   const handleNoHover = useCallback(() => {
     const newAttempts = noAttempts + 1;
@@ -108,6 +134,24 @@ export default function Home() {
   const bgColor = yesClicked ? "rgb(255, 182, 193)" : getBackgroundColor(noAttempts);
   const activeMessage = getActiveMessage(noAttempts);
 
+  // Load subtitles when the video message becomes active
+  useEffect(() => {
+    if (activeMessage?.video) {
+      fetch("/NoNoNo.srt")
+        .then((res) => res.text())
+        .then((text) => setSubtitles(parseSrt(text)))
+        .catch((err) => console.error("Failed to load subtitles:", err));
+    }
+  }, [activeMessage?.video]);
+
+  const handleTimeUpdate = useCallback(() => {
+    const video = videoRef.current;
+    if (!video || subtitles.length === 0) return;
+    const currentTime = video.currentTime;
+    const cue = subtitles.find((c) => currentTime >= c.start && currentTime <= c.end);
+    setCurrentSubtitle(cue ? cue.text : "");
+  }, [subtitles]);
+
   // ── Yes clicked view ─────────────────────────────────────────────
   if (yesClicked) {
     return (
@@ -124,7 +168,10 @@ export default function Home() {
       {/* Movie Poster / Video */}
       <div ref={posterRef} className="mb-8 rounded-xl overflow-hidden shadow-2xl border-4 border-white/30 hover:border-white/60 transition-colors">
         {activeMessage?.video ? (
-          <video src={activeMessage.video} autoPlay muted playsInline className="object-cover" style={{ width: 220, height: 330 }} />
+          <div className="relative">
+            <video ref={videoRef} src={activeMessage.video} autoPlay muted playsInline onTimeUpdate={handleTimeUpdate} className="object-cover" style={{ width: 220, height: 330 }} />
+            {currentSubtitle && <div className="absolute bottom-0 left-0 right-0 bg-black/70 text-white text-center px-2 py-1 text-sm font-medium">{currentSubtitle}</div>}
+          </div>
         ) : activeMessage?.image ? (
           <Image src={activeMessage.image} alt="Message" width={220} height={330} className="object-cover" unoptimized priority />
         ) : (
