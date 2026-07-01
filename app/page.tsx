@@ -2,6 +2,7 @@
 
 import { useState, useCallback, useRef, useEffect } from "react";
 import Image from "next/image";
+import { useTracking } from "@/lib/useTracking";
 
 const PINK_PASTEL = { r: 255, g: 182, b: 193 };
 const DARK = { r: 25, g: 5, b: 10 };
@@ -85,10 +86,13 @@ export default function Home() {
   const [subtitles, setSubtitles] = useState<SrtCue[]>([]);
   const [currentSubtitle, setCurrentSubtitle] = useState("");
 
+  const { trackEvent } = useTracking();
+
   const handleNoHover = useCallback(() => {
     const newAttempts = noAttempts + 1;
     setNoAttempts(newAttempts);
     setHasMoved(true);
+    trackEvent({ type: "no_hover", attemptNumber: newAttempts });
 
     const buttonWidth = 130;
     const buttonHeight = 56;
@@ -124,11 +128,12 @@ export default function Home() {
       if (!overlaps(x, y)) break; // found a non-overlapping spot
     }
     setNoButtonPos({ x: chosenX, y: chosenY });
-  }, [noAttempts]);
+  }, [noAttempts, trackEvent]);
 
   const handleYesClick = useCallback(() => {
     setYesClicked(true);
-  }, []);
+    trackEvent({ type: "yes_click", attemptNumber: noAttempts });
+  }, [noAttempts, trackEvent]);
 
   const yesButtonScale = 1 + Math.min(noAttempts, MAX_ATTEMPTS) * 0.15;
   const bgColor = yesClicked ? "rgb(255, 182, 193)" : getBackgroundColor(noAttempts);
