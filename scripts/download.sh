@@ -41,7 +41,7 @@ echo "✅ Crop complete: $FULL_OUTPUT"
 
 # Trim to 0:50–1:00
 TRIM_START="00:00:50"
-TRIM_END="00:01:00"
+TRIM_END="00:01:10"
 TRIM_OUTPUT="$PROJECT_ROOT/public/NoNoNo.mp4"
 echo "✂️  Trimming from ${TRIM_START} to ${TRIM_END}..."
 
