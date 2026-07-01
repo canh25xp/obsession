@@ -53,25 +53,3 @@ ffmpeg -i "$FULL_OUTPUT" \
   "$TRIM_OUTPUT" 2>/dev/null
 
 echo "✅ Trim complete: $TRIM_OUTPUT"
-
-# Convert trimmed video to GIF
-GIF_OUTPUT="$PROJECT_ROOT/public/NoNoNo.gif"
-PALETTE_FILE="$(mktemp /tmp/palette_XXXXXX.png)"
-echo "🎞️  Converting to GIF: $GIF_OUTPUT"
-
-# Generate a custom palette for better color quality
-ffmpeg -i "$TRIM_OUTPUT" \
-  -vf "fps=15,scale=810:-1:flags=lanczos,palettegen" \
-  -y \
-  "$PALETTE_FILE" 2>/dev/null
-
-# Use the palette to create a high-quality GIF
-ffmpeg -i "$TRIM_OUTPUT" \
-  -i "$PALETTE_FILE" \
-  -lavfi "fps=15,scale=810:-1:flags=lanczos [x]; [x][1:v] paletteuse" \
-  -y \
-  "$GIF_OUTPUT" 2>/dev/null
-
-rm -f "$PALETTE_FILE"
-
-echo "✅ GIF conversion complete: $GIF_OUTPUT"
