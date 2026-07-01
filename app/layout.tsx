@@ -13,7 +13,7 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "Movie Invitation",
+  title: "Obsession",
   description: "An interactive date invitation but NO is not an option",
 };
 
