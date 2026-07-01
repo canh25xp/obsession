@@ -122,7 +122,20 @@ export default function Home() {
       </div>
 
       {/* Question */}
-      <h1 className="text-4xl md:text-5xl font-bold text-white drop-shadow-lg mb-12 text-center px-4">Wanna go see a movie with me ?</h1>
+      <h1 className="text-4xl md:text-5xl font-bold text-white drop-shadow-lg mb-8 text-center px-4">Wanna go see a movie with me ?</h1>
+
+      {/* Message & media */}
+      {activeMessage && (
+        <div ref={messageRef} key={activeMessage.threshold} className="mt-2 mb-10 flex flex-col items-center gap-3 max-w-lg animate-fade-in">
+          {activeMessage.text && <p className="text-2xl md:text-3xl font-bold text-white drop-shadow-lg text-center px-4">{activeMessage.text}</p>}
+
+          {/* Image placeholder */}
+          <div className="w-36 h-36 border-2 border-dashed border-white/40 rounded-xl flex flex-col items-center justify-center text-white/50 text-xs bg-white/5 gap-1">
+            <span>🖼️</span>
+            <span className="break-all text-center px-1">{activeMessage.image}</span>
+          </div>
+        </div>
+      )}
 
       {/* Buttons */}
       <div className="flex gap-8 items-center">
@@ -169,18 +182,6 @@ export default function Home() {
         </button>
       )}
 
-      {/* Message & media */}
-      {activeMessage && (
-        <div ref={messageRef} key={activeMessage.threshold} className="mt-8 flex flex-col items-center gap-3 max-w-lg animate-fade-in">
-          {activeMessage.text && <p className="text-2xl md:text-3xl font-bold text-white drop-shadow-lg text-center px-4">{activeMessage.text}</p>}
-
-          {/* Image placeholder */}
-          <div className="w-36 h-36 border-2 border-dashed border-white/40 rounded-xl flex flex-col items-center justify-center text-white/50 text-xs bg-white/5 gap-1">
-            <span>🖼️</span>
-            <span className="break-all text-center px-1">{activeMessage.image}</span>
-          </div>
-        </div>
-      )}
     </div>
   );
 }
