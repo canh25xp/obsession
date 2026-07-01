@@ -138,12 +138,14 @@ export default function Home() {
           Yes 🩷
         </button>
 
-        {/* No button — in normal flow until first hover */}
-        {!hasMoved && (
-          <button onMouseEnter={handleNoHover} className="px-8 py-4 bg-red-300 text-white font-bold rounded-full shadow-lg cursor-default">
-            No 💔
-          </button>
-        )}
+        {/* No button — stays in flow (invisible after first hover) to keep layout stable */}
+        <button
+          onMouseEnter={handleNoHover}
+          className="px-8 py-4 bg-red-300 text-white font-bold rounded-full shadow-lg cursor-default"
+          style={hasMoved ? { visibility: "hidden" } : undefined}
+        >
+          No 💔
+        </button>
       </div>
 
       {/* No button — fixed position after first hover */}
