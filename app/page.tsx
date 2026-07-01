@@ -23,15 +23,27 @@ interface MessageDef {
 }
 
 const MESSAGES: MessageDef[] = [
-  { threshold: 3, text: "That's not an option", image: "/message_3.png" },
+  { threshold: 3, text: "That's not an option", image: "" },
   { threshold: 5, text: "Please ?", image: "/inde_navarrette_frown.jpg" },
-  { threshold: 8, text: "You really gonna make me beg aren't you ?", image: "/message_8.gif" },
+  { threshold: 8, text: "You really gonna make me beg aren't you ?", image: "" },
   { threshold: 10, text: "", video: "/NoNoNo.mp4" },
 ];
 
 function getActiveMessage(attempts: number): MessageDef | null {
   const matched = MESSAGES.filter((m) => m.threshold <= attempts);
-  return matched.length > 0 ? matched[matched.length - 1] : null;
+  if (matched.length === 0) return null;
+
+  // Carry forward image/video from earlier messages so that if the
+  // latest message omits them, the previous media stays on screen.
+  let image: string | undefined;
+  let video: string | undefined;
+  for (const m of matched) {
+    if (m.image) image = m.image;
+    if (m.video) video = m.video;
+  }
+
+  const last = matched[matched.length - 1];
+  return { ...last, image, video };
 }
 
 export default function Home() {
@@ -70,13 +82,7 @@ export default function Home() {
       const top = y;
       const right = x + buttonWidth;
       const bottom = y + buttonHeight;
-      return exclusionZones.some(
-        (zone) =>
-          left < zone.right + buffer &&
-          right > zone.left - buffer &&
-          top < zone.bottom + buffer &&
-          bottom > zone.top - buffer
-      );
+      return exclusionZones.some((zone) => left < zone.right + buffer && right > zone.left - buffer && top < zone.bottom + buffer && bottom > zone.top - buffer);
     };
 
     const maxX = window.innerWidth - buttonWidth - padding;
@@ -151,11 +157,7 @@ export default function Home() {
         </button>
 
         {/* No button — stays in flow (invisible after first hover) to keep layout stable */}
-        <button
-          onMouseEnter={handleNoHover}
-          className="px-8 py-4 bg-red-300 text-white font-bold rounded-full shadow-lg cursor-default"
-          style={hasMoved ? { visibility: "hidden" } : undefined}
-        >
+        <button onMouseEnter={handleNoHover} className="px-8 py-4 bg-red-300 text-white font-bold rounded-full shadow-lg cursor-default" style={hasMoved ? { visibility: "hidden" } : undefined}>
           No 💔
         </button>
       </div>
@@ -180,7 +182,6 @@ export default function Home() {
           No 💔
         </button>
       )}
-
     </div>
   );
 }
