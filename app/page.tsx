@@ -124,7 +124,7 @@ export default function Home() {
       {/* Movie Poster / Video */}
       <div ref={posterRef} className="mb-8 rounded-xl overflow-hidden shadow-2xl border-4 border-white/30 hover:border-white/60 transition-colors">
         {activeMessage?.video ? (
-          <video src={activeMessage.video} autoPlay loop muted playsInline className="object-cover" style={{ width: 220, height: 330 }} />
+          <video src={activeMessage.video} autoPlay muted playsInline className="object-cover" style={{ width: 220, height: 330 }} />
         ) : activeMessage?.image ? (
           <Image src={activeMessage.image} alt="Message" width={220} height={330} className="object-cover" unoptimized priority />
         ) : (
